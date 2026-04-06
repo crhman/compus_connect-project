@@ -73,7 +73,7 @@ const EventsPage: React.FC = () => {
       </div>
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl">
+          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl max-h-[85vh] overflow-y-auto">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h4 className="text-xl font-semibold text-slate-900">{selected.title}</h4>

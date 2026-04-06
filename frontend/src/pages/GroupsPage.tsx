@@ -8,6 +8,7 @@ interface GroupItem {
   subject: string;
   classLevel?: string;
   createdBy?: string;
+  members?: string[];
   materials?: { title: string; url?: string; createdAt: string }[];
   assignments?: { title: string; description?: string; dueDate?: string; createdAt: string }[];
 }
@@ -41,6 +42,11 @@ const GroupsPage: React.FC = () => {
 
   const handleJoin = async (groupId: string) => {
     await api.post("/groups/join", { groupId });
+    loadGroups();
+  };
+
+  const handleLeave = async (groupId: string) => {
+    await api.post(`/groups/${groupId}/leave`);
     loadGroups();
   };
 
@@ -86,9 +92,14 @@ const GroupsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-xl font-semibold text-slate-900">Study groups</h3>
-        <p className="text-sm text-slate-500">Join groups inside your faculty.</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="text-2xl font-semibold text-slate-900">Study groups</h3>
+          <p className="text-sm text-slate-500">Join groups inside your faculty.</p>
+        </div>
+        <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600 shadow-sm">
+          {user?.classLevel ? `Your class: ${user.classLevel}` : "Faculty groups"}
+        </div>
       </div>
       {user?.role === "teacher" && (
         <form onSubmit={handleCreateGroup} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -128,58 +139,91 @@ const GroupsPage: React.FC = () => {
           </div>
         </form>
       )}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-5 md:grid-cols-2">
         {groups.map((group) => (
-          <div key={group._id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h4 className="text-lg font-semibold text-slate-900">{group.name}</h4>
-            <p className="text-sm text-slate-500">{group.subject}</p>
-            <p className="text-xs text-indigo-500">{group.classLevel}</p>
-            <div className="mt-3 grid gap-3 text-xs text-slate-500">
+          <div
+            key={group._id}
+            className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
+          >
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-400" />
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="font-semibold text-slate-700">Materials</p>
-                {group.materials?.length ? (
-                  <ul className="mt-2 space-y-1">
-                    {group.materials.slice(0, 3).map((item, index) => (
-                      <li key={`${group._id}-mat-${index}`} className="flex items-center justify-between">
-                        <span>{item.title}</span>
-                        {item.url && (
-                          <a className="text-indigo-600" href={item.url} target="_blank" rel="noreferrer">
-                            Open
-                          </a>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="mt-1 text-xs text-slate-400">No materials yet.</p>
-                )}
+                <h4 className="text-lg font-semibold text-slate-900">{group.name}</h4>
+                <p className="text-sm text-slate-500">{group.subject}</p>
               </div>
-              <div>
-                <p className="font-semibold text-slate-700">Assignments</p>
-                {group.assignments?.length ? (
-                  <ul className="mt-2 space-y-1">
-                    {group.assignments.slice(0, 3).map((item, index) => (
-                      <li key={`${group._id}-as-${index}`} className="flex items-center justify-between">
-                        <span>{item.title}</span>
-                        {item.dueDate && (
-                          <span className="text-[10px] text-slate-400">
-                            Due {new Date(item.dueDate).toLocaleDateString()}
-                          </span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="mt-1 text-xs text-slate-400">No assignments yet.</p>
-                )}
-              </div>
+              {group.classLevel && (
+                <span className="rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-semibold text-indigo-600">
+                  {group.classLevel}
+                </span>
+              )}
             </div>
-            {user?.role === "student" && (
+
+            {user?.role === "student" && !group.members?.includes(user.id) ? (
+              <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
+                <p className="text-xs text-slate-500">
+                  Join this group to view materials and assignments.
+                </p>
+                <button
+                  onClick={() => handleJoin(group._id)}
+                  className="mt-3 w-full rounded-2xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm"
+                >
+                  Join group
+                </button>
+              </div>
+            ) : (
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3">
+                  <p className="text-xs font-semibold text-slate-700">Materials</p>
+                  {group.materials?.length ? (
+                    <div className="mt-2 grid gap-1.5">
+                      {group.materials.slice(0, 3).map((item, index) => (
+                        <div
+                          key={`${group._id}-mat-${index}`}
+                          className="flex items-center justify-between rounded-xl bg-white px-2 py-1 text-xs text-slate-600"
+                        >
+                          <span className="truncate">{item.title}</span>
+                          {item.url && (
+                            <a className="text-indigo-600" href={item.url} target="_blank" rel="noreferrer">
+                              Open
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-xs text-slate-400">No materials yet.</p>
+                  )}
+                </div>
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3">
+                  <p className="text-xs font-semibold text-slate-700">Assignments</p>
+                  {group.assignments?.length ? (
+                    <div className="mt-2 grid gap-1.5">
+                      {group.assignments.slice(0, 3).map((item, index) => (
+                        <div
+                          key={`${group._id}-as-${index}`}
+                          className="flex items-center justify-between rounded-xl bg-white px-2 py-1 text-xs text-slate-600"
+                        >
+                          <span className="truncate">{item.title}</span>
+                          {item.dueDate && (
+                            <span className="text-[10px] text-slate-400">
+                              Due {new Date(item.dueDate).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-xs text-slate-400">No assignments yet.</p>
+                  )}
+                </div>
+              </div>
+            )}
+            {user?.role === "student" && group.members?.includes(user.id) && (
               <button
-                onClick={() => handleJoin(group._id)}
-                className="mt-4 rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white"
+                onClick={() => handleLeave(group._id)}
+                className="mt-4 w-full rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600"
               >
-                Join group
+                Leave group
               </button>
             )}
             {user?.role === "teacher" && group.createdBy === user.id && (

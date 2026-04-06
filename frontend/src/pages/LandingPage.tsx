@@ -47,8 +47,8 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="mx-auto max-w-6xl px-6 py-12">
-        <header className="flex items-center justify-between">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <img
               src={logo}
@@ -62,28 +62,28 @@ const LandingPage: React.FC = () => {
               <p className="text-[11px] text-slate-400">Academic Hub</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap gap-3">
             <button
               onClick={() => navigate("/login")}
-              className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700"
+              className="w-full rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 sm:w-auto"
             >
               Login
             </button>
             <button
               onClick={() => navigate("/register")}
-              className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white"
+              className="w-full rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white sm:w-auto"
             >
               Get Started
             </button>
           </div>
         </header>
 
-        <section className="mt-16 grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="mt-10 grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="space-y-6">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-indigo-400">
               New academic era 2026
             </p>
-            <h1 className="text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
+            <h1 className="text-4xl font-semibold leading-tight text-slate-900 md:text-6xl">
               Empowering your
               <span className="block text-indigo-600">academic journey.</span>
             </h1>
@@ -121,9 +121,9 @@ const LandingPage: React.FC = () => {
         </section>
       </div>
 
-      <section className="bg-slate-100 py-12">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="flex items-center justify-between">
+      <section className="bg-slate-100 py-8 sm:py-10">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-slate-900">Core Ecosystem</h2>
               <p className="text-sm text-slate-500">Tools engineered for academic excellence.</p>
@@ -144,8 +144,8 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-12">
-        <div className="mx-auto max-w-6xl px-6">
+      <section className="py-8 sm:py-10">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="text-center">
             <h2 className="text-xl font-semibold text-slate-900">Connect with Excellence</h2>
             <p className="text-sm text-slate-500">Partner with leading academies in your field.</p>

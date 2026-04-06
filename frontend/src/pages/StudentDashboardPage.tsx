@@ -72,16 +72,22 @@ const StudentDashboardPage: React.FC = () => {
         </div>
         <div className="flex flex-wrap gap-3">
           <button
-            className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white"
+            className="w-full rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white sm:w-auto"
             onClick={() => navigate("/groups")}
           >
             Join Study Group
           </button>
           <button
-            className="rounded-full border border-indigo-200 px-4 py-2 text-xs font-semibold text-indigo-600"
+            className="w-full rounded-full border border-indigo-200 px-4 py-2 text-xs font-semibold text-indigo-600 sm:w-auto"
             onClick={() => navigate("/booking")}
           >
             Schedule Tutor
+          </button>
+          <button
+            className="w-full rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 sm:w-auto"
+            onClick={() => navigate("/buses")}
+          >
+            Bus Schedule
           </button>
         </div>
       </header>

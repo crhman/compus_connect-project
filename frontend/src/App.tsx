@@ -17,16 +17,19 @@ import AdminFacultiesPage from "./pages/AdminFacultiesPage";
 import AdminEventsPage from "./pages/AdminEventsPage";
 import AdminBusesPage from "./pages/AdminBusesPage";
 import LandingPage from "./pages/LandingPage";
+import BusesPage from "./pages/BusesPage";
+import LostFoundPage from "./pages/LostFoundPage";
 
 const RequireRole: React.FC<{ role: string; children: React.ReactNode }> = ({ role, children }) => {
-  const { user } = useAuth();
+  const { user, isReady } = useAuth();
+  if (!isReady) return null;
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== role) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 };
 
 const App: React.FC = () => {
-  const { user } = useAuth();
+  const { user, isReady } = useAuth();
 
   return (
     <Routes>
@@ -34,7 +37,9 @@ const App: React.FC = () => {
       <Route path="/register" element={<RegisterPage />} />
       <Route
         path="/"
-        element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />}
+        element={
+          isReady ? (user ? <Navigate to="/dashboard" replace /> : <LandingPage />) : null
+        }
       />
       <Route
         path="/dashboard"
@@ -61,11 +66,29 @@ const App: React.FC = () => {
         }
       />
       <Route
+        path="/lost-found"
+        element={
+          <DashboardLayout>
+            <LostFoundPage />
+          </DashboardLayout>
+        }
+      />
+      <Route
         path="/booking"
         element={
           <DashboardLayout>
             <BookingPage />
           </DashboardLayout>
+        }
+      />
+      <Route
+        path="/buses"
+        element={
+          <RequireRole role="student">
+            <DashboardLayout>
+              <BusesPage />
+            </DashboardLayout>
+          </RequireRole>
         }
       />
       <Route

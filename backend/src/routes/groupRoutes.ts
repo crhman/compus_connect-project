@@ -4,6 +4,7 @@ import {
   addGroupMaterial,
   createGroup,
   joinGroup,
+  leaveGroup,
   listGroups
 } from "../controllers/groupController.js";
 import { authMiddleware } from "../middleware/auth.js";
@@ -18,5 +19,6 @@ router.post("/:id/materials", authMiddleware, roleMiddleware("admin", "teacher")
 router.post("/:id/assignments", authMiddleware, roleMiddleware("admin", "teacher"), addGroupAssignment);
 router.post("/join", authMiddleware, roleMiddleware("student"), joinGroup);
 router.post("/:id/join", authMiddleware, roleMiddleware("student"), joinGroup);
+router.post("/:id/leave", authMiddleware, roleMiddleware("student"), leaveGroup);
 
 export default router;

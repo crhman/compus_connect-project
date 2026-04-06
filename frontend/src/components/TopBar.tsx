@@ -10,7 +10,7 @@ const TopBar: React.FC = () => {
 
   return (
     <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4">
         <div className="flex items-center gap-3">
           <img
             src={logo}
@@ -24,8 +24,8 @@ const TopBar: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-1 items-center gap-4 lg:justify-end">
-        <div className="flex w-full max-w-xs items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-500">
+      <div className="flex flex-1 flex-wrap items-center gap-3 lg:justify-end">
+        <div className="flex w-full items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-500 sm:max-w-xs">
           <span>Search</span>
           <input
             className="w-full bg-transparent text-xs text-slate-600 outline-none"
@@ -38,7 +38,7 @@ const TopBar: React.FC = () => {
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs text-white">
           {user?.name?.[0] || "U"}
         </div>
-        <button className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white">
+        <button className="w-full rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white sm:w-auto">
           {portalLabel}
         </button>
       </div>

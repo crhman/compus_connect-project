@@ -5,6 +5,7 @@ declare global {
     interface Request {
       user?: IUser;
       facultyFilter?: Record<string, unknown>;
+      file?: Express.Multer.File;
     }
   }
 }

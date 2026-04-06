@@ -210,7 +210,10 @@ const BookingPage: React.FC = () => {
         <h3 className="text-lg font-semibold text-slate-900">Your bookings</h3>
         <div className="mt-4 grid gap-3">
           {bookings.map((booking) => (
-            <div key={booking._id} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
+            <div
+              key={booking._id}
+              className="flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between"
+            >
               <div>
                 <p className="text-sm text-slate-900">{new Date(booking.time).toLocaleString()}</p>
                 <p className="text-xs text-slate-500">Status: {booking.status}</p>

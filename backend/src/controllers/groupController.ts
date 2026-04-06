@@ -83,6 +83,30 @@ export const joinGroup = asyncHandler(async (req: Request, res: Response) => {
   res.json(group);
 });
 
+export const leaveGroup = asyncHandler(async (req: Request, res: Response) => {
+  const groupId = req.params.id || req.body.groupId;
+  const group = await Group.findById(groupId);
+  if (!group) {
+    res.status(404);
+    throw new Error("Group not found");
+  }
+
+  if (req.user?.role !== "student") {
+    res.status(403);
+    throw new Error("Only students can leave groups");
+  }
+
+  if (String(group.faculty) !== String(req.user.faculty)) {
+    res.status(403);
+    throw new Error("Faculty access restricted");
+  }
+
+  const userId = String(req.user._id);
+  group.members = group.members.filter((memberId) => String(memberId) !== userId);
+  await group.save();
+  res.json(group);
+});
+
 export const addGroupMaterial = asyncHandler(async (req: Request, res: Response) => {
   const { title, url } = req.body;
   if (!title) {

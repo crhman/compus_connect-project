@@ -6,11 +6,13 @@ import logo from "../assets/logo.jpg";
 interface SidebarItem {
   label: string;
   to: string;
-  icon: "grid" | "chart" | "book" | "calendar" | "users" | "settings";
+  icon: "grid" | "chart" | "book" | "calendar" | "users" | "settings" | "bus" | "search";
 }
 
 interface SidebarProps {
   role: Role;
+  isOpen?: boolean;
+  onNavigate?: () => void;
 }
 
 const navByRole: Record<Role, SidebarItem[]> = {
@@ -18,21 +20,25 @@ const navByRole: Record<Role, SidebarItem[]> = {
     { label: "Dashboard", to: "/dashboard", icon: "grid" },
     { label: "Events", to: "/events", icon: "calendar" },
     { label: "Groups", to: "/groups", icon: "users" },
-    { label: "Bookings", to: "/booking", icon: "book" }
+    { label: "Bookings", to: "/booking", icon: "book" },
+    { label: "Lost & Found", to: "/lost-found", icon: "search" },
+    { label: "Buses", to: "/buses", icon: "bus" }
   ],
   teacher: [
     { label: "Dashboard", to: "/dashboard", icon: "grid" },
     { label: "Bookings", to: "/teacher/bookings", icon: "calendar" },
     { label: "Availability", to: "/teacher/availability", icon: "settings" },
     { label: "Students", to: "/teacher/students", icon: "users" },
-    { label: "Groups", to: "/groups", icon: "book" }
+    { label: "Groups", to: "/groups", icon: "book" },
+    { label: "Lost & Found", to: "/lost-found", icon: "search" }
   ],
   admin: [
     { label: "Overview", to: "/admin/overview", icon: "grid" },
     { label: "Users", to: "/admin/users", icon: "users" },
     { label: "Faculties", to: "/admin/faculties", icon: "book" },
     { label: "Events", to: "/admin/events", icon: "calendar" },
-    { label: "Buses", to: "/admin/buses", icon: "chart" }
+    { label: "Buses", to: "/admin/buses", icon: "chart" },
+    { label: "Lost & Found", to: "/lost-found", icon: "search" }
   ]
 };
 
@@ -89,17 +95,37 @@ const Icon: React.FC<{ name: SidebarItem["icon"] }> = ({ name }) => {
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
         </svg>
       );
+    case "bus":
+      return (
+        <svg className={base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="4" y="3" width="16" height="13" rx="2" />
+          <path d="M4 11h16" />
+          <circle cx="8" cy="18" r="2" />
+          <circle cx="16" cy="18" r="2" />
+        </svg>
+      );
+    case "search":
+      return (
+        <svg className={base} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
+      );
   }
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ role }) => {
+const Sidebar: React.FC<SidebarProps> = ({ role, isOpen = true, onNavigate }) => {
   const { logout } = useAuth();
   const links = navByRole[role];
   const roleLabel =
     role === "admin" ? "Admin Control" : role === "teacher" ? "Faculty Portal" : "Student Portal";
 
   return (
-    <aside className="sticky top-8 flex h-[calc(100vh-4rem)] w-64 flex-col gap-6 overflow-y-auto rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <aside
+      className={`flex w-full flex-col gap-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 lg:sticky lg:top-8 lg:h-[calc(100vh-4rem)] lg:w-64 lg:overflow-y-auto ${
+        isOpen ? "max-h-[80vh] opacity-100" : "max-h-0 overflow-hidden opacity-0 lg:max-h-none lg:opacity-100"
+      }`}
+    >
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           <img
@@ -120,6 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
           <NavLink
             key={link.to}
             to={link.to}
+            onClick={onNavigate}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-2xl px-4 py-2 text-xs font-semibold transition ${
                 isActive
@@ -134,13 +161,16 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
         ))}
       </nav>
 
-      <button className="rounded-2xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white">
-        Generate Reports
-      </button>
-
       <div className="space-y-2 text-xs text-slate-500">
         <button className="w-full text-left">Support</button>
-        <button className="w-full text-left" onClick={logout}>
+        <button
+          className="w-full text-left"
+          onClick={() => {
+            if (window.confirm("Are you sure you want to log out?")) {
+              logout();
+            }
+          }}
+        >
           Logout
         </button>
       </div>
