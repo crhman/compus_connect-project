@@ -1,8 +1,10 @@
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
+import crypto from "crypto";
 import { User } from "../models/User.js";
 import { Faculty } from "../models/Faculty.js";
 import { signToken } from "../utils/token.js";
+import { sendResetEmail } from "../utils/email.js";
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password, role, faculty, bio, classLevel, phone } = req.body;
@@ -22,11 +24,6 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Phone number is required");
   }
 
-  if (role === "student" && !classLevel) {
-    res.status(400);
-    throw new Error("Class level is required for students");
-  }
-
   const existing = await User.findOne({ email });
   if (existing) {
     res.status(409);
@@ -37,13 +34,6 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
   if (!facultyExists) {
     res.status(400);
     throw new Error("Invalid faculty selection");
-  }
-
-  if (role === "student" && facultyExists.semesters?.length) {
-    if (!facultyExists.semesters.includes(classLevel)) {
-      res.status(400);
-      throw new Error("Invalid class level for selected faculty");
-    }
   }
 
   const user = await User.create({ name, email, password, role, faculty, bio, classLevel, phone });
@@ -94,4 +84,53 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
       phone: user.phone
     }
   });
+});
+
+export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found with this email");
+  }
+
+  // Generate 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  
+  user.resetPasswordToken = otp;
+  user.resetPasswordExpires = new Date(Date.now() + 600000); // 10 minutes (shorter for OTP)
+  await user.save();
+  
+  try {
+    await sendResetEmail(user.email, otp);
+    res.json({ message: "6-digit OTP sent to your email" });
+  } catch (err) {
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+    res.status(500);
+    throw new Error("Email could not be sent");
+  }
+});
+
+export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { otp, password } = req.body;
+
+  const user = await User.findOne({
+    resetPasswordToken: otp,
+    resetPasswordExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("Invalid or expired OTP code.");
+  }
+
+  user.password = password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
+  await user.save();
+
+  res.json({ message: "Password reset successful" });
 });

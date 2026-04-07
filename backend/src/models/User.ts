@@ -22,6 +22,8 @@ export interface IUser extends Document {
   availability: AvailabilitySlot[];
   createdAt: Date;
   avatar?: string;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   comparePassword: (candidate: string) => Promise<boolean>;
 }
 
@@ -46,7 +48,9 @@ const userSchema = new Schema<IUser>(
     bio: { type: String, default: "" },
     subjects: { type: [String], default: [] },
     availability: { type: [availabilitySchema], default: [] },
-    avatar: { type: String, default: "" }
+    avatar: { type: String, default: "" },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date }
   },
   { timestamps: { createdAt: true, updatedAt: true } }
 );

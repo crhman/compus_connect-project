@@ -75,7 +75,11 @@ const LoginPage: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between ml-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t("password")}</label>
-                <button type="button" className="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700">
+                <button 
+                  type="button" 
+                  onClick={() => navigate("/forgot-password")}
+                  className="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700"
+                >
                   {t("forgot_password", "Forgot?")}
                 </button>
               </div>

@@ -20,6 +20,7 @@ const PublicNavbar: React.FC = () => {
   const changeLanguage = (lang: string) => {
     i18n.changeLanguage(lang);
     localStorage.setItem("cc_lang", lang);
+    setIsMobileMenuOpen(false);
   };
 
   const navLinks = [
@@ -27,6 +28,11 @@ const PublicNavbar: React.FC = () => {
     { label: t("nav_about"), path: "/about" },
     { label: t("nav_contact"), path: "/contact" },
   ];
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <div className={`sticky top-0 z-[100] transition-all duration-300 ${
@@ -37,17 +43,17 @@ const PublicNavbar: React.FC = () => {
       <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
         <header className="relative flex items-center justify-between">
           {/* Logo Section */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleNavigate("/")}>
             <img
               src={logo}
               alt="SIMAD University"
-              className="h-10 w-10 rounded-full border border-slate-200 object-cover"
+              className="h-10 w-10 sm:h-12 sm:w-12 rounded-full border border-slate-200 object-cover shadow-sm"
             />
             <div className="hidden sm:block">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-900">
                 SIMAD University
               </p>
-              <p className="text-[11px] text-slate-400">{t("academic_hub")}</p>
+              <p className="text-[10px] uppercase font-bold tracking-widest text-emerald-600 mt-0.5">{t("academic_hub")}</p>
             </div>
           </div>
           
@@ -56,7 +62,7 @@ const PublicNavbar: React.FC = () => {
             {navLinks.map((link) => (
               <button 
                 key={link.path}
-                onClick={() => navigate(link.path)} 
+                onClick={() => handleNavigate(link.path)} 
                 className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-emerald-600 transition-colors"
               >
                 {link.label}
@@ -64,10 +70,10 @@ const PublicNavbar: React.FC = () => {
             ))}
           </nav>
 
-          {/* Action Buttons (Language + Auth) */}
+          {/* Action Area */}
           <div className="flex items-center gap-2 sm:gap-4">
             <select 
-              className="rounded-full border border-slate-200 bg-white px-2.5 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs font-black uppercase text-slate-500 outline-none hover:border-emerald-200 transition-colors cursor-pointer shadow-sm"
+              className="rounded-full border border-slate-200 bg-white px-2.5 py-1.5 sm:px-4 sm:py-2 text-[10px] font-black uppercase text-slate-500 outline-none hover:border-emerald-200 transition-colors shadow-sm"
               value={i18n.language}
               onChange={(e) => changeLanguage(e.target.value)}
             >
@@ -76,12 +82,27 @@ const PublicNavbar: React.FC = () => {
               <option value="ar">AR</option>
             </select>
 
-            {/* Mobile Menu Toggle */}
+            <div className="hidden lg:flex items-center gap-3">
+              <button
+                onClick={() => handleNavigate("/login")}
+                className="rounded-full border border-slate-200 px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 transition-all"
+              >
+                {t("login")}
+              </button>
+              <button
+                onClick={() => handleNavigate("/register")}
+                className="rounded-full bg-slate-900 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-emerald-600 transition-all shadow-xl active:scale-95"
+              >
+                {t("get_started")}
+              </button>
+            </div>
+
+            {/* Mobile Menu Toggle - Only visible on small/medium screens */}
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-slate-900 text-white transition-all hover:bg-emerald-600 shadow-xl"
+              className="flex lg:hidden h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white transition-all hover:bg-emerald-600 shadow-lg"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-5 w-5">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-5 w-5">
                 {isMobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -92,39 +113,53 @@ const PublicNavbar: React.FC = () => {
           </div>
         </header>
 
-        {/* Mobile Sidebar Menu */}
-        <div className={`fixed inset-0 z-[110] transition-all duration-500 md:hidden ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        {/* Mobile Slide-over Menu */}
+        <div className={`fixed inset-0 z-[110] transition-all duration-500 lg:hidden ${
+          isMobileMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"
         }`}>
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
-          <div className="absolute right-0 top-0 h-full w-4/5 bg-white p-8 shadow-2xl">
-            <div className="flex items-center justify-between mb-12">
-              <img src={logo} className="h-10 w-10 rounded-full" alt="" />
-              <button onClick={() => setIsMobileMenuOpen(false)} className="rounded-full bg-slate-50 p-2 text-slate-400"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+          <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-md transition-opacity" onClick={() => setIsMobileMenuOpen(false)} />
+          <div className="absolute right-0 top-0 h-full w-4/5 bg-white p-8 sm:p-12 shadow-[0_0_80px_rgba(0,0,0,0.15)] flex flex-col">
+            <div className="flex items-center justify-between mb-16">
+              <div className="flex items-center gap-3">
+                <img src={logo} className="h-10 w-10 rounded-full border border-slate-100 shadow-sm" alt="" />
+                <p className="text-xs font-black uppercase tracking-widest text-slate-900">SIMAD Uni</p>
+              </div>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-rose-500 transition-colors"
+                aria-label="Close menu"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
             </div>
-            <nav className="flex flex-col gap-6">
+            
+            <nav className="flex flex-col gap-8 flex-1">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 mb-2">Navigation</p>
               {navLinks.map((link) => (
                 <button 
                   key={link.path}
-                  onClick={() => { navigate(link.path); setIsMobileMenuOpen(false); }} 
-                  className="text-left text-lg font-black uppercase tracking-widest text-slate-900 hover:text-emerald-600 transition-colors"
+                  onClick={() => handleNavigate(link.path)} 
+                  className="text-left text-2xl font-black uppercase tracking-tight text-slate-900 hover:text-emerald-600 transition-all hover:translate-x-2"
                 >
                   {link.label}
                 </button>
               ))}
-              <div className="h-px bg-slate-100 my-4" />
-              <button 
-                onClick={() => { navigate("/login"); setIsMobileMenuOpen(false); }}
-                className="text-left text-lg font-black uppercase tracking-widest text-slate-500 hover:text-emerald-600 transition-colors"
-              >
-                {t("login")}
-              </button>
-              <button 
-                onClick={() => { navigate("/register"); setIsMobileMenuOpen(false); }}
-                className="mt-4 w-full rounded-2xl bg-slate-900 py-5 text-sm font-black uppercase tracking-widest text-white hover:bg-emerald-600 transition-all shadow-xl"
-              >
-                {t("get_started")}
-              </button>
+              
+              <div className="mt-auto space-y-4 pt-10 border-t border-slate-50">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Account</p>
+                <button 
+                  onClick={() => handleNavigate("/login")}
+                  className="w-full text-left text-xl font-black uppercase tracking-tight text-slate-700 hover:text-emerald-600 transition-all"
+                >
+                  {t("login")}
+                </button>
+                <button 
+                  onClick={() => handleNavigate("/register")}
+                  className="w-full rounded-2xl bg-slate-900 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-white hover:bg-emerald-600 transition-all shadow-2xl mt-4"
+                >
+                  {t("get_started")}
+                </button>
+              </div>
             </nav>
           </div>
         </div>

@@ -21,6 +21,8 @@ import BusesPage from "./pages/BusesPage";
 import LostFoundPage from "./pages/LostFoundPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const RequireRole: React.FC<{ role: string; children: React.ReactNode }> = ({ role, children }) => {
   const { user, isReady } = useAuth();
@@ -39,6 +41,8 @@ const App: React.FC = () => {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route
         path="/"
         element={
