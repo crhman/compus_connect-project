@@ -15,6 +15,8 @@ import busRoutes from "./routes/busRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import teacherRoutes from "./routes/teacherRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 import { startSchedulers } from "./utils/scheduler.js";
 
@@ -63,6 +65,8 @@ app.use("/api/buses", busRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/student", studentRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/contact", contactRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

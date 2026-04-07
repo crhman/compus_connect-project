@@ -44,7 +44,7 @@ const EventsPage: React.FC = () => {
             type="button"
             key={event._id}
             onClick={() => setSelected(event)}
-            className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-indigo-200"
+            className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-emerald-200"
           >
             <h4 className="text-lg font-semibold text-slate-900">{event.title}</h4>
             <p className="text-sm text-slate-500 line-clamp-2">{event.description}</p>
@@ -61,7 +61,7 @@ const EventsPage: React.FC = () => {
                     e.stopPropagation();
                     handleJoin(event._id);
                   }}
-                  className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white"
+                  className="rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white"
                 >
                   {event.attendees?.includes(user.id) ? "Joined" : "Join Event"}
                 </button>
@@ -97,7 +97,7 @@ const EventsPage: React.FC = () => {
               {user?.role === "student" && (
                 <button
                   onClick={() => handleJoin(selected._id)}
-                  className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white"
+                  className="rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white"
                 >
                   {selected.attendees?.includes(user.id) ? "Joined" : "Join Event"}
                 </button>

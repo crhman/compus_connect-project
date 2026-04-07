@@ -21,6 +21,7 @@ export interface IUser extends Document {
   subjects: string[];
   availability: AvailabilitySlot[];
   createdAt: Date;
+  avatar?: string;
   comparePassword: (candidate: string) => Promise<boolean>;
 }
 
@@ -44,7 +45,8 @@ const userSchema = new Schema<IUser>(
     phone: { type: String, default: "" },
     bio: { type: String, default: "" },
     subjects: { type: [String], default: [] },
-    availability: { type: [availabilitySchema], default: [] }
+    availability: { type: [availabilitySchema], default: [] },
+    avatar: { type: String, default: "" }
   },
   { timestamps: { createdAt: true, updatedAt: true } }
 );

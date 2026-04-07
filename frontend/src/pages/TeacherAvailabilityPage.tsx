@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../api/client";
 
 const TeacherAvailabilityPage: React.FC = () => {
@@ -7,6 +7,14 @@ const TeacherAvailabilityPage: React.FC = () => {
   const [from, setFrom] = useState("09:00");
   const [to, setTo] = useState("12:00");
   const [availability, setAvailability] = useState<{ day: string; from: string; to: string }[]>([]);
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    api.get("/users/me").then((res) => {
+      setSubjects(res.data?.subjects?.join(", ") || "");
+      setAvailability(res.data?.availability || []);
+    }).catch(console.error);
+  }, []);
 
   const handleSubjects = async () => {
     const list = subjects
@@ -21,7 +29,17 @@ const TeacherAvailabilityPage: React.FC = () => {
   };
 
   const saveAvailability = async () => {
-    await api.put("/teacher/availability", { availability });
+    try {
+      await api.put("/teacher/availability", { availability });
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const removeSlot = (index: number) => {
+    setAvailability((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -38,7 +56,7 @@ const TeacherAvailabilityPage: React.FC = () => {
           />
           <button
             onClick={handleSubjects}
-            className="rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white"
+            className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white"
           >
             Save
           </button>
@@ -81,20 +99,36 @@ const TeacherAvailabilityPage: React.FC = () => {
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {availability.map((slot, index) => (
-            <span
+            <div
               key={`${slot.day}-${index}`}
-              className="rounded-full bg-indigo-50 px-3 py-1 text-xs text-indigo-600"
+              className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs text-emerald-600"
             >
-              {slot.day} {slot.from}-{slot.to}
-            </span>
+              <span>{slot.day} {slot.from}-{slot.to}</span>
+              <button 
+                onClick={() => removeSlot(index)}
+                className="hover:text-rose-500 transition-colors"
+                title="Remove slot"
+              >
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           ))}
         </div>
-        <button
-          onClick={saveAvailability}
-          className="mt-4 rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white"
-        >
-          Save availability
-        </button>
+        <div className="mt-4 flex items-center gap-4">
+          <button
+            onClick={saveAvailability}
+            className="rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+          >
+            Save availability
+          </button>
+          {success && (
+            <span className="text-sm font-medium text-emerald-600 animate-in fade-in duration-300">
+              Saved successfully!
+            </span>
+          )}
+        </div>
       </section>
     </div>
   );

@@ -9,6 +9,15 @@ export const listUsers = asyncHandler(async (req: Request, res: Response) => {
   res.json(users);
 });
 
+export const getMe = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) {
+    res.status(401);
+    throw new Error("Not authorized");
+  }
+  const user = await User.findById(req.user._id).select("-password");
+  res.json(user);
+});
+
 export const createUser = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password, role, faculty, bio, classLevel, phone } = req.body;
   if (!name || !email || !password || !role || !faculty) {
@@ -152,7 +161,8 @@ export const getTeacherAvailability = asyncHandler(async (req: Request, res: Res
 
   const slots = teacher.availability.filter((slot) => slot.day === dayName);
   if (!slots.length) {
-    return res.json({ date: targetDate.toISOString(), day: dayName, slots: [] });
+    res.json({ date: targetDate.toISOString(), day: dayName, slots: [] });
+    return;
   }
 
   const capacity = 1;
@@ -205,5 +215,21 @@ export const setTeacherAvailability = asyncHandler(async (req: Request, res: Res
   const availability = Array.isArray(req.body.availability) ? req.body.availability : [];
   req.user.availability = availability;
   await req.user.save();
+  res.json(req.user);
+});
+
+export const updateAvatar = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) {
+    res.status(401);
+    throw new Error("Not authorized");
+  }
+  if (!req.file) {
+    res.status(400);
+    throw new Error("No image uploaded");
+  }
+  
+  req.user.avatar = `/uploads/${req.file.filename}`;
+  await req.user.save();
+  
   res.json(req.user);
 });

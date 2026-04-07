@@ -28,7 +28,7 @@ const TeacherStudentsPage: React.FC = () => {
                 <p className="text-sm font-semibold text-slate-900">{student.name}</p>
                 <p className="text-xs text-slate-500">{student.email}</p>
               </div>
-              <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs text-indigo-600">Active</span>
+              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs text-emerald-600">Active</span>
             </div>
           ))}
           {students.length === 0 && <p className="text-sm text-slate-500">No students yet.</p>}

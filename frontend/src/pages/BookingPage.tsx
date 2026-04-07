@@ -118,7 +118,7 @@ const BookingPage: React.FC = () => {
             type="submit"
             disabled={!canBook}
             className={`md:col-span-3 rounded-2xl px-4 py-3 text-sm font-semibold ${
-              canBook ? "bg-indigo-600 text-white" : "bg-slate-200 text-slate-500"
+              canBook ? "bg-emerald-600 text-white" : "bg-slate-200 text-slate-500"
             }`}
           >
             Request booking
@@ -166,15 +166,15 @@ const BookingPage: React.FC = () => {
                         slot.spotsLeft === 0
                           ? "border-slate-200 bg-slate-100 text-slate-400"
                           : isSelected
-                            ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                            : "border-slate-200 bg-white text-slate-600 hover:border-indigo-200"
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                            : "border-slate-200 bg-white text-slate-600 hover:border-emerald-200"
                       }`}
                     >
                       <span>
                         {slot.day} {slot.from}-{slot.to}
                       </span>
                       {slot.spotsLeft > 0 ? (
-                        <span className="rounded-full bg-indigo-50 px-2 py-1 text-[10px] text-indigo-600">
+                        <span className="rounded-full bg-emerald-50 px-2 py-1 text-[10px] text-emerald-600">
                           Spots left: {slot.spotsLeft}
                         </span>
                       ) : (
@@ -196,7 +196,7 @@ const BookingPage: React.FC = () => {
                 <p className="text-rose-500">This slot is fully booked. Pick another time.</p>
               )}
               {selectedSlot && selectedSlot.spotsLeft > 0 && (
-                <p className="text-indigo-600">
+                <p className="text-emerald-600">
                   {selectedSlot.day} {selectedSlot.from}-{selectedSlot.to} - Spots left: {selectedSlot.spotsLeft}
                 </p>
               )}
@@ -218,7 +218,7 @@ const BookingPage: React.FC = () => {
                 <p className="text-sm text-slate-900">{new Date(booking.time).toLocaleString()}</p>
                 <p className="text-xs text-slate-500">Status: {booking.status}</p>
               </div>
-              <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs text-indigo-600">
+              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs text-emerald-600">
                 Faculty isolated
               </span>
             </div>

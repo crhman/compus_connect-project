@@ -18,6 +18,7 @@ export const createLostItem = asyncHandler(async (req: Request, res: Response) =
     res.status(400);
     throw new Error("Title is required");
   }
+
   if (!req.user || req.user.role !== "admin") {
     res.status(403);
     throw new Error("Only admins can post lost items");
@@ -88,3 +89,23 @@ export const updateLostItem = asyncHandler(async (req: Request, res: Response) =
 
   res.json(item);
 });
+
+export const deleteLostItem = asyncHandler(async (req: Request, res: Response) => {
+  const item = await LostItem.findById(req.params.id);
+  if (!item) {
+    res.status(404);
+    throw new Error("Lost item not found");
+  }
+
+  if (
+    req.user?.role !== "admin" &&
+    String(item.reportedBy || "") !== String(req.user?._id || "")
+  ) {
+    res.status(403);
+    throw new Error("Unauthorized to delete this item");
+  }
+
+  await item.deleteOne();
+  res.json({ message: "Lost item removed" });
+});
+

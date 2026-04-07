@@ -108,7 +108,7 @@ const AdminEventsPage: React.FC = () => {
         </div>
         <button
           type="submit"
-          className="mt-4 rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white"
+          className="mt-4 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white"
         >
           Create event
         </button>
@@ -153,7 +153,7 @@ const AdminEventsPage: React.FC = () => {
           <div className="mt-4 flex gap-3">
             <button
               type="submit"
-              className="rounded-2xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white"
+              className="rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white"
             >
               Save changes
             </button>

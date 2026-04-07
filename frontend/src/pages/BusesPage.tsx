@@ -165,12 +165,12 @@ const BusesPage: React.FC = () => {
           <button
             type="button"
             onClick={loadSchedules}
-            className="rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white"
+            className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white"
           >
             Check schedules
           </button>
         </div>
-        {message && <p className="mt-3 text-xs text-indigo-600">{message}</p>}
+        {message && <p className="mt-3 text-xs text-emerald-600">{message}</p>}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -209,7 +209,7 @@ const BusesPage: React.FC = () => {
                 className={`mt-4 w-full rounded-2xl px-4 py-2 text-xs font-semibold shadow-sm transition ${
                   isFull || isBooked
                     ? "bg-slate-200 text-slate-500"
-                    : "bg-indigo-600 text-white"
+                    : "bg-emerald-600 text-white"
                 }`}
               >
                 {isBooked ? "Booked" : isFull ? "Full" : "Book seat"}
@@ -238,7 +238,7 @@ const BusesPage: React.FC = () => {
                 <div className="text-xs text-slate-500">
                   Amount: ${booking.amount} · {booking.paymentMethod || "-"}
                 </div>
-                <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
                   {booking.status}
                 </span>
               </div>

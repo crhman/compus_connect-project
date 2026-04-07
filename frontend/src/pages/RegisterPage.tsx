@@ -2,254 +2,153 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
 import logo from "../assets/logo.jpg";
 
-interface FacultyItem {
-  _id: string;
-  name: string;
-  semesters?: string[];
-}
+interface FacultyItem { _id: string; name: string; semesters?: string[]; }
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useTranslation();
   const [faculties, setFaculties] = useState<FacultyItem[]>([]);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student");
-  const [faculty, setFaculty] = useState("");
-  const [classLevel, setClassLevel] = useState("");
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", password: "", role: "student", faculty: "", classLevel: "" });
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    api.get("/faculties")
-      .then((res) => setFaculties(res.data))
-      .catch(() => undefined);
+    api.get("/faculties").then((res) => setFaculties(res.data)).catch(() => undefined);
   }, []);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setError(null);
-
+    setLoading(true);
     try {
       const response = await api.post("/auth/register", {
-        name,
-        email,
-        phone,
-        password,
-        role,
-        faculty,
-        classLevel: role === "student" ? classLevel : undefined
+        ...formData,
+        classLevel: formData.role === "student" ? formData.classLevel : undefined
       });
       login(response.data.token, response.data.user);
       navigate("/dashboard");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-10 sm:px-6 sm:py-16">
-      <div className="pointer-events-none absolute -top-24 left-10 h-48 w-48 rounded-full bg-indigo-200/40 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 right-10 h-56 w-56 rounded-full bg-emerald-200/40 blur-3xl" />
-      <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[32px] border border-slate-200/70 bg-white/80 shadow-[0_30px_80px_rgba(15,23,42,0.12)] backdrop-blur lg:grid-cols-[1.05fr_1fr]">
-        <div className="relative flex flex-col justify-between gap-10 bg-gradient-to-br from-indigo-600 via-sky-600 to-emerald-500 p-8 text-white sm:p-10">
-          <div>
-            <div className="flex items-center gap-3">
-              <img
-                src={logo}
-                alt="SIMAD University logo"
-                className="h-10 w-10 rounded-full border border-white/40 object-cover"
-              />
-              <div>
-                <p className="text-sm font-semibold">SIMAD University</p>
-                <p className="text-xs text-white/70">Academic Hub</p>
-              </div>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6 lg:p-12">
+      <div className="w-full max-w-6xl grid lg:grid-cols-2 bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100">
+        
+        {/* Left Panel - Branding */}
+        <div className="relative bg-slate-900 p-12 text-white flex flex-col justify-between hidden lg:flex overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-600/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-600/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2" />
+          
+          <div className="relative z-10 cursor-pointer flex items-center gap-4" onClick={() => navigate("/")}>
+            <img src={logo} alt="SIMAD" className="h-12 w-12 rounded-full border-2 border-white/20" />
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.3em]">SIMAD University</p>
+              <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">{t("academic_hub")}</p>
             </div>
+          </div>
 
-            <h1 className="mt-10 text-3xl font-semibold leading-tight sm:text-4xl">
-              Build your academic future with confidence.
+          <div className="relative z-10 space-y-6">
+            <h1 className="text-5xl font-black leading-tight tracking-tighter">
+              Start your <span className="text-emerald-500">academic</span> journey today.
             </h1>
-            <p className="mt-4 text-sm text-white/80">
-              Create your SIMAD account to access tutoring, class groups, events, and smart
-              scheduling in one secure portal.
+            <p className="text-slate-400 font-medium leading-relaxed max-w-sm">
+              Access the most advanced university platform in the region. One account, limitless possibilities.
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            {[
-              "Verified academic identity",
-              "Faculty-only communities",
-              "Instant tutor access",
-              "Secure campus workflows"
-            ].map((item) => (
-              <div
-                key={item}
-                className="flex items-center gap-3 rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-xs"
-              >
-                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/20 text-[10px]">
-                  SIM
-                </span>
-                {item}
-              </div>
-            ))}
+          <div className="relative z-10 flex items-center gap-8 border-t border-white/10 pt-8 mt-12">
+            <div>
+              <p className="text-2xl font-black">10k+</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Active Students</p>
+            </div>
+            <div>
+              <p className="text-2xl font-black">500+</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Expert Faculty</p>
+            </div>
           </div>
-
-          <div className="text-xs text-white/70">SIMAD Life - Safe Work</div>
         </div>
 
-        <div className="p-8 sm:p-10">
-          <h2 className="text-2xl font-semibold text-slate-900">Create your account</h2>
-          <p className="mt-2 text-sm text-slate-500">
-            Join our academic community with one secure profile.
-          </p>
+        {/* Right Panel - Form */}
+        <div className="p-8 sm:p-14 lg:p-16 overflow-y-auto max-h-[90vh]">
+          <div className="lg:hidden flex items-center gap-4 mb-10" onClick={() => navigate("/")}>
+            <img src={logo} alt="SIMAD" className="h-10 w-10 rounded-full" />
+            <p className="text-xs font-black uppercase tracking-widest text-slate-900">SIMAD University</p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="mt-8 grid gap-4">
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Full name
-              </label>
-              <input
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                placeholder="Jane Doe"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                required
-              />
-            </div>
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-2">{t("register_now")}</h2>
+          <p className="text-sm text-slate-400 font-medium mb-10">{t("sign_up_to_get_started")}</p>
 
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                University email
-              </label>
-              <input
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                placeholder="jane.doe@campus.edu"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  Phone / WhatsApp
-                </label>
-                <input
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                  placeholder="+252 61 234 5678"
-                  value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                  required
-                />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">{t("full_name")}</label>
+                <input required className="w-full rounded-2xl border-2 border-slate-50 bg-slate-50 px-6 py-4 text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all" placeholder="Jane Doe" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
               </div>
-              <div>
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  Faculty
-                </label>
-                <select
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                  value={faculty}
-                  onChange={(event) => {
-                    setFaculty(event.target.value);
-                    setClassLevel("");
-                  }}
-                  required
-                >
-                  <option value="">Select faculty</option>
-                  {faculties.map((item) => (
-                    <option key={item._id} value={item._id}>
-                      {item.name}
-                    </option>
-                  ))}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">{t("email_address")}</label>
+                <input type="email" required className="w-full rounded-2xl border-2 border-slate-50 bg-slate-50 px-6 py-4 text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all" placeholder="jane.doe@simad.edu.so" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">{t("phone_number")}</label>
+                <input required className="w-full rounded-2xl border-2 border-slate-50 bg-slate-50 px-6 py-4 text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all" placeholder="+252 ..." value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">{t("nav_faculties")}</label>
+                <select required className="w-full rounded-2xl border-2 border-slate-50 bg-slate-50 px-6 py-4 text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all appearance-none" value={formData.faculty} onChange={(e) => setFormData({...formData, faculty: e.target.value, classLevel: ""})}>
+                  <option value="">{t("select_faculty")}</option>
+                  {faculties.map((f) => <option key={f._id} value={f._id}>{f.name}</option>)}
                 </select>
               </div>
             </div>
 
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Academic role
-              </label>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {["student", "teacher"].map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setRole(item)}
-                    className={`rounded-full px-4 py-2 text-xs font-semibold capitalize transition ${
-                      role === item
-                        ? "bg-indigo-600 text-white shadow"
-                        : "border border-slate-200 text-slate-600 hover:border-indigo-200"
-                    }`}
-                  >
-                    {item}
+            <div className="space-y-4">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">{t("account_type")}</label>
+              <div className="flex gap-4">
+                {["student", "teacher"].map((role) => (
+                  <button key={role} type="button" onClick={() => setFormData({...formData, role})} className={`flex-1 rounded-2xl py-4 text-[10px] font-black uppercase tracking-widest transition-all ${formData.role === role ? "bg-slate-900 text-white shadow-xl scale-105" : "bg-slate-50 text-slate-400 hover:bg-slate-100"}`}>
+                    {role === "student" ? t("student_default") : t("professor")}
                   </button>
                 ))}
               </div>
             </div>
 
-            {role === "student" && (
-              <div>
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  Class level
-                </label>
-                <select
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                  value={classLevel}
-                  onChange={(event) => setClassLevel(event.target.value)}
-                  required
-                >
-                  <option value="">Select semester</option>
-                  {(faculties.find((item) => item._id === faculty)?.semesters?.length
-                    ? faculties.find((item) => item._id === faculty)?.semesters
-                    : Array.from({ length: 8 }, (_, i) => `Semester ${i + 1}`)
-                  )?.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
+            {formData.role === "student" && (
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">{t("select_semester")}</label>
+                <select required className="w-full rounded-2xl border-2 border-slate-50 bg-slate-50 px-6 py-4 text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all appearance-none" value={formData.classLevel} onChange={(e) => setFormData({...formData, classLevel: e.target.value})}>
+                  <option value="">{t("select_semester")}</option>
+                  {(faculties.find((f) => f._id === formData.faculty)?.semesters || Array.from({length:8}, (_,i)=>`Semester ${i+1}`)).map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
             )}
 
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Password
-              </label>
-              <input
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                placeholder="At least 8 characters"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-              />
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">{t("password")}</label>
+              <input type="password" required className="w-full rounded-2xl border-2 border-slate-50 bg-slate-50 px-6 py-4 text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all" placeholder="At least 8 characters" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
             </div>
 
-            {error && <p className="text-xs text-rose-500">{error}</p>}
+            {error && <div className="rounded-2xl bg-rose-50 p-4 text-[10px] font-black text-rose-600 border border-rose-100 uppercase tracking-widest">{error}</div>}
 
-            <button
-              type="submit"
-              className="w-full rounded-2xl bg-indigo-600 px-4 py-3 text-xs font-semibold text-white shadow-lg shadow-indigo-200/60"
-            >
-              Register account
+            <button disabled={loading} type="submit" className="w-full rounded-2xl bg-emerald-600 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-2xl transition-all hover:bg-slate-900 hover:-translate-y-1 active:scale-95 disabled:opacity-50">
+              {loading ? "..." : t("register_now")}
             </button>
           </form>
 
-          <div className="mt-6 text-center text-xs text-slate-500">
-            Already have an account?{" "}
-            <button
-              type="button"
-              onClick={() => navigate("/login")}
-              className="font-semibold text-indigo-500"
-            >
-              Sign In
-            </button>
-          </div>
+          <p className="mt-8 text-center text-[10px] font-black uppercase tracking-widest text-slate-400">
+            {t("already_have_account")}{" "}
+            <button type="button" onClick={() => navigate("/login")} className="text-emerald-600 hover:text-emerald-700 underline underline-offset-4">{t("login")}</button>
+          </p>
         </div>
       </div>
     </div>

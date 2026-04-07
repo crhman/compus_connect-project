@@ -154,7 +154,7 @@ const AdminUsersPage: React.FC = () => {
         </div>
         <button
           type="submit"
-          className="mt-4 rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white"
+          className="mt-4 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white"
         >
           Add user
         </button>
@@ -225,7 +225,7 @@ const AdminUsersPage: React.FC = () => {
           <div className="mt-4 flex gap-3">
             <button
               type="submit"
-              className="rounded-2xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white"
+              className="rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white"
             >
               Save changes
             </button>
@@ -253,7 +253,7 @@ const AdminUsersPage: React.FC = () => {
                 {user.phone && <p className="text-xs text-slate-400">{user.phone}</p>}
               </div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs text-indigo-600">
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs text-emerald-600">
                   {user.role}
                 </span>
                 <button

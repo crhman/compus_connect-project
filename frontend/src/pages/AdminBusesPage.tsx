@@ -192,7 +192,7 @@ const AdminBusesPage: React.FC = () => {
         </div>
         <button
           type="submit"
-          className="mt-4 rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white"
+          className="mt-4 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white"
         >
           Add bus
         </button>
@@ -244,7 +244,7 @@ const AdminBusesPage: React.FC = () => {
           <div className="mt-4 flex gap-3">
             <button
               type="submit"
-              className="rounded-2xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white"
+              className="rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white"
             >
               Save changes
             </button>
@@ -339,7 +339,7 @@ const AdminBusesPage: React.FC = () => {
           />
           <button
             type="submit"
-            className="md:col-span-5 rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white"
+            className="md:col-span-5 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white"
           >
             Add schedule
           </button>
@@ -384,7 +384,7 @@ const AdminBusesPage: React.FC = () => {
             <div className="flex gap-2 md:col-span-5">
               <button
                 type="submit"
-                className="rounded-2xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white"
+                className="rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white"
               >
                 Save schedule
               </button>
@@ -468,7 +468,7 @@ const AdminBusesPage: React.FC = () => {
                     Amount: ${booking.amount} · {booking.paymentMethod || "-"}
                   </p>
                 </div>
-                <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
                   {booking.status}
                 </span>
               </div>

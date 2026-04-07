@@ -132,7 +132,7 @@ const GroupsPage: React.FC = () => {
             </select>
             <button
               type="submit"
-              className="rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white"
+              className="rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white"
             >
               Create group
             </button>
@@ -143,16 +143,16 @@ const GroupsPage: React.FC = () => {
         {groups.map((group) => (
           <div
             key={group._id}
-            className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
+            className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md"
           >
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-400" />
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-500 via-sky-500 to-emerald-400" />
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h4 className="text-lg font-semibold text-slate-900">{group.name}</h4>
                 <p className="text-sm text-slate-500">{group.subject}</p>
               </div>
               {group.classLevel && (
-                <span className="rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-semibold text-indigo-600">
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-semibold text-emerald-600">
                   {group.classLevel}
                 </span>
               )}
@@ -165,7 +165,7 @@ const GroupsPage: React.FC = () => {
                 </p>
                 <button
                   onClick={() => handleJoin(group._id)}
-                  className="mt-3 w-full rounded-2xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm"
+                  className="mt-3 w-full rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm"
                 >
                   Join group
                 </button>
@@ -183,7 +183,7 @@ const GroupsPage: React.FC = () => {
                         >
                           <span className="truncate">{item.title}</span>
                           {item.url && (
-                            <a className="text-indigo-600" href={item.url} target="_blank" rel="noreferrer">
+                            <a className="text-emerald-600" href={item.url} target="_blank" rel="noreferrer">
                               Open
                             </a>
                           )}
@@ -254,7 +254,7 @@ const GroupsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleAddMaterial(group._id)}
-                    className="rounded-2xl bg-indigo-600 px-3 py-2 text-xs font-semibold text-white md:col-span-2"
+                    className="rounded-2xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white md:col-span-2"
                   >
                     Share material
                   </button>
@@ -297,7 +297,7 @@ const GroupsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleAddAssignment(group._id)}
-                    className="rounded-2xl bg-indigo-600 px-3 py-2 text-xs font-semibold text-white md:col-span-2"
+                    className="rounded-2xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white md:col-span-2"
                   >
                     Share assignment
                   </button>

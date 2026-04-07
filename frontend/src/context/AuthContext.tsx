@@ -11,6 +11,7 @@ export interface UserProfile {
   bio?: string;
   classLevel?: string;
   phone?: string;
+  avatar?: string;
 }
 
 interface AuthContextValue {
@@ -19,26 +20,40 @@ interface AuthContextValue {
   isReady: boolean;
   login: (token: string, user: UserProfile) => void;
   logout: () => void;
+  updateUser: (user: UserProfile) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | undefined>();
-  const [token, setToken] = useState<string | undefined>();
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
+  const [user, setUser] = useState<UserProfile | undefined>(() => {
     const stored = localStorage.getItem("cc_auth");
     if (stored) {
       try {
-        const parsed = JSON.parse(stored) as { token: string; user: UserProfile };
-        setUser(parsed.user);
-        setToken(parsed.token);
+        const parsed = JSON.parse(stored);
+        return parsed.user;
       } catch {
-        localStorage.removeItem("cc_auth");
+        return undefined;
       }
     }
+    return undefined;
+  });
+  const [token, setToken] = useState<string | undefined>(() => {
+    const stored = localStorage.getItem("cc_auth");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        return parsed.token;
+      } catch {
+        return undefined;
+      }
+    }
+    return undefined;
+  });
+  const [isReady, setIsReady] = useState(true);
+
+  useEffect(() => {
+    // Initial check is done in state initializers
     setIsReady(true);
   }, []);
 
@@ -56,7 +71,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem("cc_auth");
   };
 
-  const value = useMemo(() => ({ user, token, isReady, login, logout }), [user, token, isReady]);
+  const updateUser = (newUser: UserProfile) => {
+    setUser(newUser);
+    if (token) {
+      localStorage.setItem("cc_auth", JSON.stringify({ token, user: newUser }));
+    }
+  };
+
+  const value = useMemo(() => ({ user, token, isReady, login, logout, updateUser }), [user, token, isReady]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

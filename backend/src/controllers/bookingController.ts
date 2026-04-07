@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { Booking } from "../models/Booking.js";
 import { User } from "../models/User.js";
+import { Notification } from "../models/Notification.js";
 
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -45,7 +46,9 @@ export const createBooking = asyncHandler(async (req: Request, res: Response) =>
     res.status(400);
     throw new Error("Invalid time");
   }
-  if (selectedTime.getTime() <= Date.now()) {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  if (selectedTime.getTime() < startOfDay.getTime()) {
     res.status(400);
     throw new Error("Booking time must be in the future");
   }
@@ -101,6 +104,15 @@ export const createBooking = asyncHandler(async (req: Request, res: Response) =>
     status: "pending"
   });
 
+  await Notification.create({
+    recipient: teacherUser._id,
+    sender: req.user._id,
+    title: "New Booking Request",
+    message: `${studentName} wants to book a session on ${new Date(time).toLocaleString()}.`,
+    type: "booking",
+    link: "/teacher/bookings"
+  });
+
   res.status(201).json(booking);
 });
 
@@ -129,5 +141,15 @@ export const updateBookingStatus = asyncHandler(async (req: Request, res: Respon
 
   booking.status = status;
   await booking.save();
+
+  await Notification.create({
+    recipient: booking.student,
+    sender: req.user._id,
+    title: `Booking ${status.charAt(0).toUpperCase() + status.slice(1)}`,
+    message: `Your booking for ${new Date(booking.time).toLocaleString()} has been ${status}.`,
+    type: "booking",
+    link: "/booking"
+  });
+
   res.json(booking);
 });

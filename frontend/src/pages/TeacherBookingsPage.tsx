@@ -23,8 +23,12 @@ const TeacherBookingsPage: React.FC = () => {
   }, []);
 
   const handleStatus = async (id: string, status: string) => {
-    await api.patch(`/bookings/${id}/status`, { status });
-    loadBookings();
+    try {
+      await api.patch(`/bookings/${id}/status`, { status });
+      loadBookings();
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Failed to update booking status");
+    }
   };
 
   return (
@@ -59,7 +63,7 @@ const TeacherBookingsPage: React.FC = () => {
                 className={`rounded-full px-3 py-1 text-xs font-semibold ${
                   booking.status === "accepted" || booking.status === "completed"
                     ? "bg-emerald-100 text-emerald-700"
-                    : "bg-indigo-600 text-white"
+                    : "bg-emerald-600 text-white"
                 }`}
               >
                 {booking.status === "accepted" ? "Accepted" : "Accept"}

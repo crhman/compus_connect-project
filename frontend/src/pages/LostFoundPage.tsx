@@ -18,16 +18,21 @@ interface LostItem {
 const LostFoundPage: React.FC = () => {
   const { user } = useAuth();
   const [items, setItems] = useState<LostItem[]>([]);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState(() => localStorage.getItem("lf_title") || "");
+  const [description, setDescription] = useState(() => localStorage.getItem("lf_desc") || "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [status, setStatus] = useState<"lost" | "found">("lost");
+  const [status, setStatus] = useState<"lost" | "found">(
+    () => (localStorage.getItem("lf_status") as "lost" | "found") || "lost"
+  );
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [contactEmail, setContactEmail] = useState("");
+  const [faculties, setFaculties] = useState<{ _id: string; name: string }[]>([]);
+  const [selectedFaculty, setSelectedFaculty] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [includeClaimed, setIncludeClaimed] = useState(true);
+  const [isEditingData, setIsEditingData] = useState<LostItem | null>(null);
 
   const loadItems = () => {
     api
@@ -40,6 +45,15 @@ const LostFoundPage: React.FC = () => {
         setError("Unable to load items. Please check your connection.");
       });
   };
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      api.get("/faculties").then((res) => {
+        setFaculties(res.data);
+        if (res.data.length > 0) setSelectedFaculty(res.data[0]._id);
+      }).catch(console.error);
+    }
+  }, [user]);
 
   useEffect(() => {
     loadItems();
@@ -61,6 +75,12 @@ const LostFoundPage: React.FC = () => {
     };
   }, [imagePreview]);
 
+  useEffect(() => {
+    localStorage.setItem("lf_title", title);
+    localStorage.setItem("lf_desc", description);
+    localStorage.setItem("lf_status", status);
+  }, [title, description, status]);
+
   const handleCreate = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
@@ -72,6 +92,9 @@ const LostFoundPage: React.FC = () => {
       formData.append("contactName", contactName);
       formData.append("contactPhone", contactPhone);
       formData.append("contactEmail", contactEmail);
+      if (selectedFaculty) {
+        formData.append("faculty", selectedFaculty);
+      }
       if (imageFile) {
         formData.append("image", imageFile);
       }
@@ -83,6 +106,9 @@ const LostFoundPage: React.FC = () => {
       setImageFile(null);
       setImagePreview(null);
       setStatus("lost");
+      localStorage.removeItem("lf_title");
+      localStorage.removeItem("lf_desc");
+      localStorage.removeItem("lf_status");
       if (response?.data) {
         setItems((prev) => [response.data, ...prev]);
       } else {
@@ -96,6 +122,36 @@ const LostFoundPage: React.FC = () => {
   const handleClaim = async (id: string) => {
     await api.patch(`/lost-items/${id}`, { status: "claimed" });
     loadItems();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure you want to remove this item?")) {
+      try {
+        await api.delete(`/lost-items/${id}`);
+        setItems((prev) => prev.filter((item) => item._id !== id));
+      } catch (err) {
+        console.error("Delete failed", err);
+      }
+    }
+  };
+
+  const handleUpdate = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!isEditingData) return;
+    try {
+      await api.patch(`/lost-items/${isEditingData._id}`, {
+        title: isEditingData.title,
+        description: isEditingData.description,
+        status: isEditingData.status,
+        contactName: isEditingData.contactName,
+        contactPhone: isEditingData.contactPhone,
+        contactEmail: isEditingData.contactEmail
+      });
+      setIsEditingData(null);
+      loadItems();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Update failed");
+    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,12 +194,25 @@ const LostFoundPage: React.FC = () => {
           <h4 className="text-sm font-semibold text-slate-900">Post an item</h4>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             <input
-              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700"
+              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 md:col-span-2"
               placeholder="Item title"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               required
             />
+            <select
+              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700"
+              value={selectedFaculty}
+              onChange={(event) => setSelectedFaculty(event.target.value)}
+              required
+            >
+              <option value="">Select Faculty</option>
+              {faculties.map((f) => (
+                <option key={f._id} value={f._id}>
+                  {f.name}
+                </option>
+              ))}
+            </select>
             <select
               className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700"
               value={status}
@@ -194,7 +263,7 @@ const LostFoundPage: React.FC = () => {
           {error && <p className="mt-3 text-xs text-rose-500">{error}</p>}
           <button
             type="submit"
-            className="mt-4 rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white"
+            className="mt-4 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white"
           >
             Submit item
           </button>
@@ -224,6 +293,49 @@ const LostFoundPage: React.FC = () => {
                 {item.status}
               </span>
             </div>
+            {user?.role === "admin" && (
+              <div className="mt-2 flex gap-2">
+                <button 
+                  onClick={() => setIsEditingData(item)}
+                  className="rounded-full bg-emerald-50 p-2 text-emerald-600 hover:bg-emerald-100 transition-colors"
+                  title="Edit Item"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                <button 
+                  onClick={() => handleDelete(item._id)}
+                  className="rounded-full bg-rose-50 p-2 text-rose-600 hover:bg-rose-100 transition-colors"
+                  title="Delete Item"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            {isEditingData?._id === item._id && (
+              <form onSubmit={handleUpdate} className="mt-4 space-y-3 rounded-2xl bg-slate-50 p-4 border border-emerald-100">
+                <input 
+                  className="w-full rounded-xl border border-slate-200 p-2 text-xs" 
+                  value={isEditingData.title}
+                  onChange={e => setIsEditingData({...isEditingData, title: e.target.value} as LostItem)}
+                  required
+                />
+                <textarea 
+                  className="w-full rounded-xl border border-slate-200 p-2 text-xs" 
+                  value={isEditingData.description || ""}
+                  onChange={e => setIsEditingData({...isEditingData, description: e.target.value} as LostItem)}
+                />
+                <div className="flex gap-2">
+                  <button type="submit" className="flex-1 rounded-xl bg-emerald-600 py-2 text-white text-xs font-bold">Save</button>
+                  <button type="button" onClick={() => setIsEditingData(null)} className="flex-1 rounded-xl bg-slate-200 py-2 text-slate-600 text-xs font-bold">Cancel</button>
+                </div>
+              </form>
+            )}
+
             {item.image && (
               <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200">
                 <img src={item.image} alt={item.title} className="h-40 w-full object-cover" />

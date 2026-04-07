@@ -75,7 +75,7 @@ const AdminDashboardPage: React.FC = () => {
           <div key={stat.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">{stat.label}</p>
             <p className="mt-3 text-2xl font-semibold text-slate-900">{stat.value}</p>
-            <p className="text-xs text-indigo-500">{stat.meta}</p>
+            <p className="text-xs text-emerald-500">{stat.meta}</p>
           </div>
         ))}
       </div>
@@ -87,7 +87,7 @@ const AdminDashboardPage: React.FC = () => {
               <h3 className="text-sm font-semibold text-slate-900">Latest Users</h3>
               <p className="text-xs text-slate-500">Newest accounts created in the system</p>
             </div>
-            <button className="text-xs font-semibold text-indigo-500">View all</button>
+            <button className="text-xs font-semibold text-emerald-500">View all</button>
           </div>
           <div className="mt-4 grid gap-3">
             {recentUsers.map((user) => (
@@ -96,7 +96,7 @@ const AdminDashboardPage: React.FC = () => {
                   <p className="text-xs font-semibold text-slate-900">{user.name}</p>
                   <p className="text-[11px] text-slate-500">{user.email}</p>
                 </div>
-                <span className="rounded-full bg-indigo-50 px-3 py-1 text-[11px] text-indigo-600">
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] text-emerald-600">
                   {user.role}
                 </span>
               </div>
@@ -126,7 +126,7 @@ const AdminDashboardPage: React.FC = () => {
             <h3 className="text-sm font-semibold text-slate-900">Active Transport</h3>
             <p className="text-xs text-slate-500">Latest bus routes and schedules</p>
           </div>
-          <button className="text-xs font-semibold text-indigo-500">Manage buses</button>
+          <button className="text-xs font-semibold text-emerald-500">Manage buses</button>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           {buses.slice(0, 4).map((bus) => (
